@@ -190,7 +190,9 @@ namespace HedgeHulkApp.Usercontrol
         {
             Console.WriteLine($"Jump to x={wsetting.axisX},y={wsetting.axisY}");
 
-            Point point = new Point(wsetting.axisX, wsetting.axisY);
+            //translate to FactorCenter
+            Point point = TranslateToCenter(wsetting.AxisX, wsetting.axisY, wsetting.factor);
+            //Point point = new Point(wsetting.axisX, wsetting.axisY);
 
             scaleFactor = wsetting.factor;
             ZoomIn(point, true);
@@ -198,6 +200,24 @@ namespace HedgeHulkApp.Usercontrol
 
         
             
+        }
+
+        private Point TranslateToCenter(int axisX, int axisY, int factor)
+        {
+            int width = this.Width;
+            int height = this.Height;
+
+            // ---------------------------------       
+            //
+            //
+            //
+            //                *
+            //
+            //
+            // ---------------------------------
+            int newX = axisX - width / factor / 2;
+            int newY = axisY - height / factor / 2;
+            return new Point(newX, newY);
         }
 
         private void Run(WafeMapSetting wafeMapSetting)
