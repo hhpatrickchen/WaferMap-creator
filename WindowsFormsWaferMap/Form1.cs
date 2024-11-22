@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -60,12 +61,14 @@ namespace WindowsFormsWaferMap
 
             // 建立 "Function" 功能表
             ToolStripMenuItem FunctionMenu = new ToolStripMenuItem("Function");
-            ToolStripMenuItem DemoInItem = new ToolStripMenuItem("Demo", null, ZoomIn);
+            ToolStripMenuItem DemoInItem = new ToolStripMenuItem("Demo start", null, Demo);
+            ToolStripMenuItem DemoResetInItem = new ToolStripMenuItem("Demo Reset", null, DemoReset);
 
 
             // 將子選單加到 Function
             FunctionMenu.DropDownItems.Add(DemoInItem);
-            
+            FunctionMenu.DropDownItems.Add(DemoResetInItem);
+
 
 
             // 建立 "Help" 功能表
@@ -112,7 +115,16 @@ namespace WindowsFormsWaferMap
 
         }
 
+        private void DemoReset(object sender, EventArgs e)
+        {
+            callbackDelegateGUI?.Invoke(COMMANDCODE.DEMO_RESET, wsetting);
+        }
 
+        private void Demo(object sender, EventArgs e)
+        {
+
+            callbackDelegateGUI?.Invoke(COMMANDCODE.WAFER_RUN, wsetting);        
+        }
 
         public void SetCallBackFun(CallbackDelegateGUI callback, WafeMapSetting setting)
         {

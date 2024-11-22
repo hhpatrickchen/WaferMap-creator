@@ -354,6 +354,11 @@ namespace ConsoleApp2
             var waferC =  WaferMapUtility.CalculateWaferCenter(axisX, axisY, row, line);
             Console.WriteLine($"waferCX={waferC.centerX},waferCY={waferC.centerY}");
 
+            mapData.header_Information.wafer_Testing.IndexSizeX = (uint)(dieWitdh * 1000*100); //0.01um
+            mapData.header_Information.wafer_Testing.IndexSizeY = (uint)(dieheight * 1000*100);///0.01
+
+
+
             mapData.header_Information.waferProbingCoordinateSystemData.CoordinatorXOfWaferCenterDie = waferC.centerX;
             mapData.header_Information.waferProbingCoordinateSystemData.CoordinatorYOfWaferCenterDie = waferC.centerY;
 

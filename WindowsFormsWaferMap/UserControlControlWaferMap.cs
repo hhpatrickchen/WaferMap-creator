@@ -23,6 +23,7 @@ namespace HedgeHulkApp.Usercontrol
         JUMP_POSITION,
         NEW_MAP,
         OPEN_MAP,
+        DEMO_RESET,
     }
 
     public delegate void CallbackDelegateGUI(COMMANDCODE commmand, WafeMapSetting setting=null);
@@ -55,56 +56,6 @@ namespace HedgeHulkApp.Usercontrol
 
         private void buttonRun_Click(object sender, EventArgs e)
         {
-            Random rnd = new Random();
-            //wsetting.count = rnd.Next(80, 100);
-            wsetting.startPosition = 94;
-            Thread thread = new Thread(() =>
-            {
-
-                int x = 40;
-                int y = 10;
-                for (int i = 0; i < 20; i++)
-                {
-
-                    if (i % 2==0)
-                    {
-                        x += 25;
-                       
-                        int factor = 4;
-                        wsetting.axisX = x;
-                        wsetting.axisY = y;
-                        wsetting.factor = factor;
-                        callbackDelegateGUI?.Invoke(COMMANDCODE.JUMP_POSITION, wsetting);
-                        Thread.Sleep(600);
-                    }
-                    else 
-                    {
-              
-                        int factor = 1;
-                        wsetting.axisX = x;
-                        wsetting.axisY = y;
-                        wsetting.factor = factor;
-                        callbackDelegateGUI?.Invoke(COMMANDCODE.JUMP_POSITION, wsetting);
-                        Thread.Sleep(600);
-                    }
-                    
-                    
-                    callbackDelegateGUI?.Invoke(COMMANDCODE.WAFER_RUN, wsetting);
-                    Thread.Sleep(600);
-                    Console.WriteLine($"Count={wsetting.startPosition}");
-                    wsetting.startPosition++;
-                    
-
-
-
-     
-                }
-
-            });
-
-            thread.Start();
-
-
         }
         private void buttonResetWafer_Click(object sender, EventArgs e)
         {

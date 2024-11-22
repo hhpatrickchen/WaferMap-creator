@@ -33,6 +33,9 @@ namespace HedgeHulkApp
         public int Row { get; set; }
 
         public DiePosition diePos { set; get; }
+        public bool IsFlashing { get; set; } = false; // 是否閃爍
+        public bool FlashState { get; set; } = false; // 閃爍狀態
+
         public Die(Rectangle bounds)
         {
             Bounds = bounds;

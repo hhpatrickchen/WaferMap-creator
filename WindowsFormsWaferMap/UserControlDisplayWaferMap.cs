@@ -37,9 +37,12 @@ namespace HedgeHulkApp.Usercontrol
         private Point zoomOrigin = Point.Empty; // 放大顯示的起始原點
         private int scaleFactor = 1; // 默认缩放比例
 
+
+        private System.Windows.Forms.Timer flashTimer;
+        private bool EnableTesting = false;
         List<Die> dieList = new List<Die>();
         //List<Die> dieData = new List<Die>();
-
+        
        
         DIESTATE testst = DIESTATE.PASS;
         public UserControlDisplayWaferMap()
@@ -52,10 +55,43 @@ namespace HedgeHulkApp.Usercontrol
             this.MouseWheel += PanelWaferMap_MouseWheel;
             this.MouseMove += PanelWaferMap_MouseMove;
 
+
+            flashTimer = new System.Windows.Forms.Timer();
+            flashTimer.Interval = 500; // 每500ms觸發一次
+            flashTimer.Tick += FlashTimer_Tick;
+            flashTimer.Start();
+
             //this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelWaferMap_MouseDown);
             //this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PanelWaferMap_MouseMove);
             //this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PanelWaferMap_MouseUp);
         }
+
+        private void FlashTimer_Tick(object sender, EventArgs e)
+        {
+
+            if(!EnableTesting)
+            {
+                return;
+            }
+
+            foreach (Die die in dieList)
+            {
+                if (die.IsFlashing)
+                {
+                    die.FlashState = !die.FlashState; // 切換閃爍狀態
+                   
+
+                    Rectangle adjustedBounds = AdjustedBounds(die.Bounds);
+                    
+                    Invalidate(adjustedBounds);
+                    
+                }
+            }
+
+          
+            
+        }
+
         private void PanelWaferMap_MouseWheel(object sender, MouseEventArgs e)
         {
             if (e.Delta > 0)
@@ -140,7 +176,8 @@ namespace HedgeHulkApp.Usercontrol
                 case COMMANDCODE.WAFER_ZOOM_IN: ZoomIn(); break;
                 case COMMANDCODE.WAFER_ZOOM_OUT: ZoomOut(); break;                
                 case COMMANDCODE.WAFER_RESET_ZOOM: ResetZoom(); break; 
-                case COMMANDCODE.WAFER_RUN: Run(wafeMapSetting); break;
+                case COMMANDCODE.WAFER_RUN: DemoRun(wafeMapSetting); break;
+                case COMMANDCODE.DEMO_RESET: DemoResetRun(wafeMapSetting); break;
                 case COMMANDCODE.JUMP_POSITION: JumpPosition(wafeMapSetting); break;
                 case COMMANDCODE.WAFER_RESET: WaferReset(wafeMapSetting);break;
                 case COMMANDCODE.NEW_MAP: NewMap(wafeMapSetting);break;
@@ -148,6 +185,8 @@ namespace HedgeHulkApp.Usercontrol
                 default: throw new Exception("Unexpected command=" + command);
             }
         }
+
+
 
         private void OpenMap(WafeMapSetting wafeMapSetting)
         {
@@ -219,36 +258,89 @@ namespace HedgeHulkApp.Usercontrol
             int newY = axisY - height / factor / 2;
             return new Point(newX, newY);
         }
-
-        private void Run(WafeMapSetting wafeMapSetting)
+        private void DemoResetRun(WafeMapSetting wafeMapSetting)
         {
-            int count = wafeMapSetting.startPosition;
-            Console.WriteLine("Demo Run count");
+            EnableTesting = false;
 
-            while (dieList[count].diePos != DiePosition.Edge)
+            for (int i = 0; i < dieList.Count; i++)
             {
-                count++;
-            }
-            dieList[count].PassFail = testst;
-            if (testst == DIESTATE.PASS)
+                dieList[i].IsFlashing = false;
+            }           
+
+        }
+        private void DemoRun(WafeMapSetting wsetting)
+        {
+            // Random rnd = new Random();
+            //wsetting.count = rnd.Next(80, 100);
+            EnableTesting = true;
+
+            int start = wsetting.startPosition;
+            int end = wsetting.endPosition;
+            Thread thread = new Thread(() =>
             {
-                testst = DIESTATE.FAIL;
-            }
-            else
+
+                //int x = 40;
+                //int y = 10;
+                for (int i = start; i <= end; i++)
+                {
+
+                    //if (i % 2==0)
+                    //{
+                    //    x += 25;
+
+                    //    int factor = 4;
+                    //    wsetting.axisX = x;
+                    //    wsetting.axisY = y;
+                    //    wsetting.factor = factor;
+                    //    callbackDelegateGUI?.Invoke(COMMANDCODE.JUMP_POSITION, wsetting);
+                    //    Thread.Sleep(600);
+                    //}
+                    //else 
+                    //{
+
+                    //    int factor = 1;
+                    //    wsetting.axisX = x;
+                    //    wsetting.axisY = y;
+                    //    wsetting.factor = factor;
+                    //    callbackDelegateGUI?.Invoke(COMMANDCODE.JUMP_POSITION, wsetting);
+                    //    Thread.Sleep(600);
+                    //}
+
+                    Run(i);
+
+                    Thread.Sleep(2000);
+                    Console.WriteLine($"current={i}");
+                }
+
+            });
+
+            thread.Start();
+        }
+        private void Run(int index)
+        {
+                       
+            Console.WriteLine($"Demo Run !! start={index}");
+
+            while (dieList[index].diePos == DiePosition.Edge || dieList[index].diePos == DiePosition.OutsideEdge)
             {
-                testst = DIESTATE.PASS;
+                Console.WriteLine($"current={index}, pos={dieList[index].diePos}");
+                index++;
+
             }
+            //dieList[index].PassFail = testst;
+            //if (testst == DIESTATE.PASS)
+            //{
+            //    testst = DIESTATE.FAIL;
+            //}
+            //else
+            //{
+            //    testst = DIESTATE.PASS;
+            //}
 
 
-            // 计算出需更新的 Die 的区域
-            //var updateRegion = new Rectangle(
-            //    Math.Min(dieList[9].Bounds.X, dieList[10].Bounds.X), // 左上角X
-            //    Math.Min(dieList[9].Bounds.Y, dieList[10].Bounds.Y), // 左上角Y
-            //    Math.Abs(dieList[12].Bounds.Right - dieList[9].Bounds.Left), // 宽度
-            //    Math.Abs(dieList[12].Bounds.Bottom - dieList[9].Bounds.Top)  // 高度
-            //);
+            dieList[index].IsFlashing = true;
 
-            Rectangle adjustedBounds = AdjustedBounds(dieList[count].Bounds);
+            Rectangle adjustedBounds = AdjustedBounds(dieList[index].Bounds);
 
             // 只更新部分区域
             Invalidate(adjustedBounds);
@@ -335,35 +427,51 @@ namespace HedgeHulkApp.Usercontrol
                     int dieY = (int)(die.Bounds.Y);
                     Rectangle dieRect = new Rectangle(dieX, dieY, dieWidth, dieHeight);
 
-                    if (die.diePos == DiePosition.Edge)
+
+                    if (die.IsFlashing)
                     {
-                        //if (die.PassFail != DIESTATE.IDLE)
-                        //{
-                        //    if (die.PassFail == DIESTATE.PASS)
-                        //    {
-                        //        bufferGraphics.FillRectangle(Brushes.Green, dieRect);
-                        //    }
-                        //    else
-                        //    {
-                        //        bufferGraphics.FillRectangle(Brushes.Red, dieRect);
-                        //    }
-                        //}
-                        //else
+                        if (die.FlashState)
                         {
-         
-
-                            bufferGraphics.FillRectangle(Brushes.LightGray, dieRect);
+                            bufferGraphics.FillRectangle(Brushes.Pink, dieRect); // 閃爍時的顏色
                         }
-
-                    }
-                    else if (die.diePos == DiePosition.InsideEdge)
-                    {
-                        bufferGraphics.FillRectangle(Brushes.LightYellow, dieRect);
+                        else
+                        {
+                            bufferGraphics.FillRectangle(Brushes.LightGray, dieRect); // 閃爍間隙時的顏色
+                        }
                     }
                     else
                     {
-                        bufferGraphics.FillRectangle(Brushes.WhiteSmoke, dieRect);
+                        if (die.diePos == DiePosition.Edge)
+                        {
+
+                            bufferGraphics.FillRectangle(Brushes.LightGray, dieRect);
+
+                        }
+                        else if (die.diePos == DiePosition.InsideEdge)
+                        {
+                            bufferGraphics.FillRectangle(Brushes.LightYellow, dieRect);
+                        }
+                        else
+                        {
+                            bufferGraphics.FillRectangle(Brushes.WhiteSmoke, dieRect);
+                        }
                     }
+
+                 
+
+
+                    //if (die.PassFail != DIESTATE.IDLE)
+                    //{
+                    //    if (die.PassFail == DIESTATE.PASS)
+                    //    {
+                    //        bufferGraphics.FillRectangle(Brushes.Green, dieRect);
+                    //    }
+                    //    else
+                    //    {
+                    //        bufferGraphics.FillRectangle(Brushes.Red, dieRect);
+                    //    }
+                    //}
+
 
                     // 绘制 Die 的边框
                     bufferGraphics.DrawRectangle(Pens.Black, dieRect);
