@@ -9,6 +9,13 @@ namespace ConsoleApp2
 {
     public class WaferMapUtility
     {
+        public enum DiePosition
+        {
+            Edge,       // 在邊緣
+            InsideEdge, // 在邊緣內
+            OutsideEdge // 在邊緣外
+        }
+
         public static T ConvertToBigEndian<T>(byte[] data) where T : struct
         {
             // 创建指定类型的实例
@@ -130,26 +137,26 @@ namespace ConsoleApp2
             return ((int)centerX, (int)centerY);
         }
 
-        public static bool IsEdgeDie(int dieX, int dieY, int centerX, int centerY, double waferDiameter, double dieWidth, double dieHeight)
-        {
+        //public static bool IsEdgeDie(int dieX, int dieY, int centerX, int centerY, double waferDiameter, double dieWidth, double dieHeight)
+        //{
             
-            // 计算晶圆半径
-            double waferRadius = waferDiameter / 2.0;
+        //    // 计算晶圆半径
+        //    double waferRadius = waferDiameter / 2.0;
 
-            // 设定边缘判断的阈值，例如取 die 宽高中的较小值作为近似边缘厚度
-            double edgeThreshold = Math.Min(dieWidth, dieHeight) / 2.0;
+        //    // 设定边缘判断的阈值，例如取 die 宽高中的较小值作为近似边缘厚度
+        //    double edgeThreshold = Math.Min(dieWidth, dieHeight) / 2.0;
 
-            // 计算 Die 中心的 X 和 Y 坐标
-            double dieCenterX = dieX + dieWidth / 2.0;
-            double dieCenterY = dieY + dieHeight / 2.0;
+        //    // 计算 Die 中心的 X 和 Y 坐标
+        //    double dieCenterX = dieX + dieWidth / 2.0;
+        //    double dieCenterY = dieY + dieHeight / 2.0;
 
-            // 计算 Die 中心到圆心的距离
-            double distanceToCenter = Math.Sqrt(Math.Pow(dieCenterX - centerX, 2) + Math.Pow(dieCenterY - centerY, 2));
+        //    // 计算 Die 中心到圆心的距离
+        //    double distanceToCenter = Math.Sqrt(Math.Pow(dieCenterX - centerX, 2) + Math.Pow(dieCenterY - centerY, 2));
 
-            // 判断是否为边缘 Die
-            //Console.WriteLine($"distanceToCenter={distanceToCenter},edgeThreshold range={waferRadius - edgeThreshold}~{waferRadius + edgeThreshold}");
-            return distanceToCenter >= (waferRadius - edgeThreshold) && distanceToCenter <= (waferRadius + edgeThreshold);
-        }
+        //    // 判断是否为边缘 Die
+        //    //Console.WriteLine($"distanceToCenter={distanceToCenter},edgeThreshold range={waferRadius - edgeThreshold}~{waferRadius + edgeThreshold}");
+        //    return distanceToCenter >= (waferRadius - edgeThreshold) && distanceToCenter <= (waferRadius + edgeThreshold);
+        //}
         public static bool IsEdgeDie(int row, int col, int centerX, int centerY, double waferDiameter, double dieWidth, double dieHeight, uint edgeThreshold)
         {
             // 计算晶圆半径
@@ -169,7 +176,44 @@ namespace ConsoleApp2
             // 判断是否为边缘 Die
             return distanceToCenter >= (waferRadius - edgeThreshold) && distanceToCenter <= (waferRadius + edgeThreshold);
         }
+        public static DiePosition GetDiePosition(
+         int row,
+         int col,
+         int centerX,
+         int centerY,
+         double waferDiameter,
+         double dieWidth,
+         double dieHeight,
+         int edgeThreshold)
+        {
+            // 計算晶圓半徑
+            double waferRadius = waferDiameter / 2.0;
 
+            // 將行列坐標轉換為實際的物理 X, Y 坐標（Die 中心坐標）
+            double dieCenterX = row * dieWidth;
+            double dieCenterY = col * dieHeight;
+
+            // 計算 Die 中心到晶圓圓心的距離
+            double distanceToCenter = Math.Sqrt(
+                Math.Pow(dieCenterX - centerX * dieWidth, 2) +
+                Math.Pow(dieCenterY - centerY * dieHeight, 2)
+            );
+
+            // 判斷 Die 的位置狀態
+            if (distanceToCenter >= (waferRadius - edgeThreshold) && distanceToCenter <= (waferRadius + edgeThreshold))
+            {
+                return DiePosition.Edge; // 在邊緣
+            }
+            else if (distanceToCenter < (waferRadius - edgeThreshold))
+            {
+
+                return DiePosition.InsideEdge; // 在邊緣內
+            }
+            else
+            {
+                return DiePosition.OutsideEdge; // 在邊緣外
+            }
+        }
         public static List<MapDie> FindEdgeDies(int waferCenterX, int waferCenterY, int waferRadius, int dieWidth, int dieHeight, int edgeThickness)
         {
             List<MapDie> edgeDies = new List<MapDie>();

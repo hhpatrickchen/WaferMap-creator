@@ -140,10 +140,10 @@ namespace ConsoleApp2
 
             //
             uint waferDiameter = 200;
-            int OtopLeftX = 1780;
-            int OtopLeftY = 2186;
-            uint dieWitdh = 3000;  //um
-            uint dieheight = 3000;//um
+            int OtopLeftX = 30;
+            int OtopLeftY = 30;
+            uint dieWitdh = 1780;  //um
+            uint dieheight = 2186;//um
 
 
             Console.WriteLine("Start-------------New Wafer map.................");

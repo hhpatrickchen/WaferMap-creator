@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WindowsFormsWaferMap;
 
 namespace HedgeHulkApp
 {
@@ -16,17 +17,32 @@ namespace HedgeHulkApp
     }
     public class Die
     {
-        public Rectangle Bounds { get; private set; }
-        public bool IsLightGreen { get; set; }
+        
+
+        public Rectangle Bounds { get; set; }
+       // public bool IsEdge { get; set; }
         public DIESTATE PassFail { get; internal set; }
+
+        public int Number { set; get; } = 0;
 
         public int ID { get; internal set; }
 
-        public Die(Rectangle bounds, bool isLightGreen)
+
+        public int Column { get; set; }
+
+        public int Row { get; set; }
+
+        public DiePosition diePos { set; get; }
+        public Die(Rectangle bounds)
         {
             Bounds = bounds;
-            IsLightGreen = isLightGreen;
+  
             PassFail = DIESTATE.IDLE;
+
+            //if(isLightGreen)
+            //{
+            //    Number = 0xED;
+            //}
         }
 
         public void UpdateBounds(Rectangle newBounds)

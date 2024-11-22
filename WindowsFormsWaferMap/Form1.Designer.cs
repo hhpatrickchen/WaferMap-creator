@@ -29,10 +29,12 @@ namespace WindowsFormsWaferMap
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
             this.userControlDisplayWaferMap1 = new HedgeHulkApp.Usercontrol.UserControlDisplayWaferMap();
-            this.userControlControlWaferMap1 = new HedgeHulkApp.Usercontrol.UserControlControlWaferMap();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.propertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -43,38 +45,44 @@ namespace WindowsFormsWaferMap
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(492, 450);
+            this.panel1.Size = new System.Drawing.Size(562, 479);
             this.panel1.TabIndex = 0;
-            // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.userControlControlWaferMap1);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel2.Location = new System.Drawing.Point(492, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(295, 450);
-            this.panel2.TabIndex = 1;
             // 
             // userControlDisplayWaferMap1
             // 
             this.userControlDisplayWaferMap1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.userControlDisplayWaferMap1.Location = new System.Drawing.Point(0, 0);
             this.userControlDisplayWaferMap1.Name = "userControlDisplayWaferMap1";
-            this.userControlDisplayWaferMap1.Size = new System.Drawing.Size(492, 450);
+            this.userControlDisplayWaferMap1.Size = new System.Drawing.Size(562, 479);
             this.userControlDisplayWaferMap1.TabIndex = 0;
             // 
-            // userControlControlWaferMap1
+            // panel2
             // 
-            this.userControlControlWaferMap1.Location = new System.Drawing.Point(29, 12);
-            this.userControlControlWaferMap1.Name = "userControlControlWaferMap1";
-            this.userControlControlWaferMap1.Size = new System.Drawing.Size(254, 343);
-            this.userControlControlWaferMap1.TabIndex = 0;
+            this.panel2.Controls.Add(this.propertyGrid);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel2.Location = new System.Drawing.Point(562, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(292, 479);
+            this.panel2.TabIndex = 1;
+            // 
+            // propertyGrid
+            // 
+            this.propertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGrid.Location = new System.Drawing.Point(0, 0);
+            this.propertyGrid.Name = "propertyGrid";
+            this.propertyGrid.Size = new System.Drawing.Size(292, 479);
+            this.propertyGrid.TabIndex = 1;
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(787, 450);
+            this.ClientSize = new System.Drawing.Size(854, 479);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
             this.Name = "Form1";
@@ -91,7 +99,8 @@ namespace WindowsFormsWaferMap
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private HedgeHulkApp.Usercontrol.UserControlDisplayWaferMap userControlDisplayWaferMap1;
-        private HedgeHulkApp.Usercontrol.UserControlControlWaferMap userControlControlWaferMap1;
+        private System.Windows.Forms.PropertyGrid propertyGrid;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
     }
 }
 

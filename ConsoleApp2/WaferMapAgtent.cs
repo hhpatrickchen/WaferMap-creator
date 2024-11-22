@@ -13,7 +13,7 @@ namespace ConsoleApp2
     {
         public MapData mapData = new MapData();
 
-        public uint edge_thickness = 2;
+        public int edge_thickness = 2;
         public uint edge_rollback = 1;
         public WaferMapAgtent()
         {
@@ -365,10 +365,25 @@ namespace ConsoleApp2
                 mapData.test_Result_Per_Dice[i].Xaxis = axisX;
                 mapData.test_Result_Per_Dice[i].Yaxis = axisY;
 
+                //mapData.test_Result_Per_Dice[i].DieTestResult
+                
+                var diepos = WaferMapUtility.GetDiePosition(
+                    axisX, axisY, waferC.centerX, waferC.centerY, waferDiameter, dieWitdh, dieheight, (int)edge_thickness);
 
-                mapData.test_Result_Per_Dice[i].IsEdge = WaferMapUtility.IsEdgeDie(
-                    axisX, axisY, waferC.centerX, waferC.centerY, waferDiameter, dieWitdh, dieheight, edge_thickness);
 
+                if (diepos == WaferMapUtility.DiePosition.Edge )
+                {
+                    mapData.test_Result_Per_Dice[i].DieProperty = 2;                                              
+                }
+                else if(diepos == WaferMapUtility.DiePosition.InsideEdge)
+                {
+                    mapData.test_Result_Per_Dice[i].DieProperty = 1; //edge
+                }
+                else 
+                {                    
+                    mapData.test_Result_Per_Dice[i].DieProperty = 0; //不會參與PROBING
+                    
+                }
                 //X-------------->
                 //35 34 33 ...............0 -------------- -5 -6 
                 axisX--;

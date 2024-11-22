@@ -14,9 +14,13 @@ namespace HedgeHulkApp.Usercontrol
 {
     public partial class UserControlDisplayWaferMap : UserControl
     {
-        public delegate void CallbackDelegate(string message);
+        public delegate void CallbackDelegate(string message, int selIndex);
+
+        public delegate void CallbackMouseMove(int x, int y);
 
         CallbackDelegate callbackfun;
+
+        CallbackMouseMove callbacmousemove;
 
         private Bitmap bufferBitmap; // 建立一個緩衝區圖像
 
@@ -34,7 +38,7 @@ namespace HedgeHulkApp.Usercontrol
         private int scaleFactor = 1; // 默认缩放比例
 
         List<Die> dieList = new List<Die>();
-        List<Die> dieData = new List<Die>();
+        //List<Die> dieData = new List<Die>();
 
        
         DIESTATE testst = DIESTATE.PASS;
@@ -46,6 +50,7 @@ namespace HedgeHulkApp.Usercontrol
             this.Load += UserControlDisplayWaferMap_Load; // 添加Load事件
 
             this.MouseWheel += PanelWaferMap_MouseWheel;
+            this.MouseMove += PanelWaferMap_MouseMove;
 
             //this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelWaferMap_MouseDown);
             //this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PanelWaferMap_MouseMove);
@@ -123,7 +128,10 @@ namespace HedgeHulkApp.Usercontrol
         {
             callbackfun = callback;
         }
-
+        public void SetMouseMoveCallback(CallbackMouseMove callback)
+        {
+            callbacmousemove = callback;
+        }
         public void commandcallback(COMMANDCODE command, WafeMapSetting wafeMapSetting)
         {
             Console.WriteLine(command);
@@ -134,29 +142,45 @@ namespace HedgeHulkApp.Usercontrol
                 case COMMANDCODE.WAFER_RESET_ZOOM: ResetZoom(); break; 
                 case COMMANDCODE.WAFER_RUN: Run(wafeMapSetting); break;
                 case COMMANDCODE.JUMP_POSITION: JumpPosition(wafeMapSetting); break;
-                case COMMANDCODE.WAFER_RESET: WaferReset();break;
+                case COMMANDCODE.WAFER_RESET: WaferReset(wafeMapSetting);break;
                 case COMMANDCODE.NEW_MAP: NewMap(wafeMapSetting);break;
+                case COMMANDCODE.OPEN_MAP: OpenMap(wafeMapSetting); break;
                 default: throw new Exception("Unexpected command=" + command);
             }
         }
 
-        private void NewMap(WafeMapSetting wafeMapSetting)
+        private void OpenMap(WafeMapSetting wafeMapSetting)
         {
-            int col = wafeMapSetting.col;
-            int row = wafeMapSetting.row;
+            dieList.Clear();            
+            dieList.AddRange(wafeMapSetting.dieData);
 
-            gDieCols = col;
-            gDieRows = row;
 
-            InitWaferList();
+            gDieCols = wafeMapSetting.col;
+            gDieRows = wafeMapSetting.row;
+
             ReDrawWaferMap(); // 重绘晶圆图
 
             Console.WriteLine($"Width={Width}, Height={Height}");
         }
 
-        private void WaferReset()
+        private void NewMap(WafeMapSetting wafeMapSetting)
         {
-            InitWaferList(); // 初始化 Die 数据
+
+            InitWaferList(wafeMapSetting);
+
+            gDieCols = wafeMapSetting.col;
+            gDieRows = wafeMapSetting.row;
+
+            ReDrawWaferMap(); // 重绘晶圆图
+
+            Console.WriteLine($"Width={Width}, Height={Height}");
+
+
+        }
+
+        private void WaferReset(WafeMapSetting wafeMapSetting)
+        {
+            InitWaferList(wafeMapSetting); // 初始化 Die 数据
             ReDrawWaferMap(); // 重绘晶圆图
 
             Console.WriteLine($"Width={Width}, Height={Height}");
@@ -178,10 +202,10 @@ namespace HedgeHulkApp.Usercontrol
 
         private void Run(WafeMapSetting wafeMapSetting)
         {
-            int count = wafeMapSetting.count;
+            int count = wafeMapSetting.startPosition;
             Console.WriteLine("Demo Run count");
 
-            while (dieList[count].IsLightGreen == false)
+            while (dieList[count].diePos != DiePosition.Edge)
             {
                 count++;
             }
@@ -222,6 +246,18 @@ namespace HedgeHulkApp.Usercontrol
 
             return new Rectangle(adjustedX, adjustedY, adjustedWidth, adjustedHeight);
         }
+        private Rectangle RestoreBounds(Rectangle adjustedBounds)
+        {
+            // 還原 X 和 Y，反向處理縮放
+            int restoredX = (int)((adjustedBounds.X / scaleFactor) + zoomOrigin.X);
+            int restoredY = (int)((adjustedBounds.Y / scaleFactor) + zoomOrigin.Y);
+
+            // 還原 Width 和 Height，反向處理縮放
+            int restoredWidth = (int)(adjustedBounds.Width / scaleFactor);
+            int restoredHeight = (int)(adjustedBounds.Height / scaleFactor);
+
+            return new Rectangle(restoredX, restoredY, restoredWidth, restoredHeight);
+        }
         private void ZoomIn()
         {
             Console.WriteLine("ZoomIn");
@@ -256,6 +292,9 @@ namespace HedgeHulkApp.Usercontrol
                 //int scaledDieHeight = (int)(dieHeight * scaleFactor);
 
                 // 如果当前进行局部放大（Zoom In），则使用框选区域进行缩放
+
+               // bufferGraphics.ScaleTransform(-1, -1);
+
                 if (scaleFactor > 1)
                 {
                     // 使用框选区域进行缩放和平移
@@ -267,45 +306,75 @@ namespace HedgeHulkApp.Usercontrol
                 // 绘制每个 Die
                 foreach (Die die in dieList)
                 {
+                    if (die.diePos == DiePosition.OutsideEdge)
+                    {
+                        continue;
+                    }
+
                     int dieX = (int)(die.Bounds.X);
                     int dieY = (int)(die.Bounds.Y);
                     Rectangle dieRect = new Rectangle(dieX, dieY, dieWidth, dieHeight);
 
-                    if (die.IsLightGreen)
+                    if (die.diePos == DiePosition.Edge)
                     {
-                        if (die.PassFail != DIESTATE.IDLE)
+                        //if (die.PassFail != DIESTATE.IDLE)
+                        //{
+                        //    if (die.PassFail == DIESTATE.PASS)
+                        //    {
+                        //        bufferGraphics.FillRectangle(Brushes.Green, dieRect);
+                        //    }
+                        //    else
+                        //    {
+                        //        bufferGraphics.FillRectangle(Brushes.Red, dieRect);
+                        //    }
+                        //}
+                        //else
                         {
-                            if (die.PassFail == DIESTATE.PASS)
-                            {
-                                bufferGraphics.FillRectangle(Brushes.Green, dieRect);
-                            }
-                            else
-                            {
-                                bufferGraphics.FillRectangle(Brushes.Red, dieRect);
-                            }
-                        }
-                        else
-                        {
-                            if (die.IsLightGreen)
-                            {
-                                bufferGraphics.FillRectangle(Brushes.LightYellow, dieRect);
-                            }
-                            else
-                            {
-                                bufferGraphics.FillRectangle(Brushes.LightGray, dieRect);
-                            }
+         
 
+                            bufferGraphics.FillRectangle(Brushes.LightGray, dieRect);
                         }
 
                     }
+                    else if (die.diePos == DiePosition.InsideEdge)
+                    {
+                        bufferGraphics.FillRectangle(Brushes.LightYellow, dieRect);
+                    }
                     else
                     {
-                        bufferGraphics.FillRectangle(Brushes.LightGray, dieRect);
+                        bufferGraphics.FillRectangle(Brushes.WhiteSmoke, dieRect);
                     }
 
                     // 绘制 Die 的边框
                     bufferGraphics.DrawRectangle(Pens.Black, dieRect);
+
+                    // 在 Die 中心繪製編號
+                    if(scaleFactor>1)
+                    {
+                        // 動態計算字體大小
+                        float fontSize = Math.Min(dieWidth, dieHeight) * 0.5f; // 字體大小是 Die 寬高的 50%
+                        if (fontSize < 1) fontSize = 1;
+                  
+                        // 在 Die 中心繪製編號
+                        string dieNumber = die.Number.ToString("").PadLeft(2, ' '); // 假設 Die 中有 Number 屬性
+                        if (die.diePos == DiePosition.Edge)
+                        {
+                            dieNumber = "ED";
+                        }
+
+                        using (Font font = new Font("Arial", fontSize, FontStyle.Bold))
+                        using (StringFormat format = new StringFormat())
+                        {
+                            format.Alignment = StringAlignment.Center; // 文字水平居中
+                            format.LineAlignment = StringAlignment.Center; // 文字垂直居中
+
+                            bufferGraphics.DrawString(dieNumber, font, Brushes.Black, dieRect, format);
+                        }
+                    }
+             
                 }
+
+
 
 
                 int waferRadius = Math.Min(dieWidth * gDieCols, dieHeight * gDieRows) / 2;
@@ -351,39 +420,41 @@ namespace HedgeHulkApp.Usercontrol
             }
         }
 
-        private void InitWaferList()
+        private void InitWaferList(WafeMapSetting wafeMapSetting)
         {
-            int panelWidth = this.Width;
-            int panelHeight = this.Height;
-
-            int dieWidth = panelWidth / gDieCols;
-            int dieHeight = panelHeight / gDieRows;
-
-            int waferRadius = Math.Min(dieWidth * gDieCols, dieHeight * gDieRows) / 2;
+           // int waferRadius = Math.Min(dieWidth * gDieCols, dieHeight * gDieRows) / 2;
 
             dieList.Clear();
-            dieData.Clear();
 
-            for (int i = 0; i < gDieRows; i++)
-            {
-                for (int j = 0; j < gDieCols; j++)
-                {
-                    int dieX = (j * dieWidth) + ((panelWidth - gDieCols * dieWidth) / 2);
-                    int dieY = (i * dieHeight) + ((panelHeight - gDieRows * dieHeight) / 2);
-                    bool isInSideWafer = IsPointInsideEllipse(new Point(dieX + dieWidth / 2, dieY + dieHeight / 2), new Rectangle(0, 0, panelWidth, panelHeight));
+            //afeMapSetting.initWaferList();
 
-                    Rectangle dieRect = new Rectangle(dieX, dieY, dieWidth, dieHeight);
-                    Die die = new Die(dieRect, isInSideWafer);
-                    dieData.Add(die);
-                }
-            }
+
+
+            wafeMapSetting.initWafer();
+
+            dieList.AddRange(wafeMapSetting.dieData);
+
+
+            //for (int i = 0; i < gDieRows; i++)
+            //{
+            //    for (int j = 0; j < gDieCols; j++)
+            //    {
+            //        int dieX = (j * dieWidth) + ((panelWidth - gDieCols * dieWidth) / 2);
+            //        int dieY = (i * dieHeight) + ((panelHeight - gDieRows * dieHeight) / 2);
+            //        bool isInSideWafer = IsPointInsideEllipse(new Point(dieX + dieWidth / 2, dieY + dieHeight / 2), new Rectangle(0, 0, panelWidth, panelHeight));
+
+            //        Rectangle dieRect = new Rectangle(dieX, dieY, dieWidth, dieHeight);
+            //        Die die = new Die(dieRect, isInSideWafer);
+            //        dieData.Add(die);
+            //    }
+            //}
         }
 
         private void UpdateDiePositions()
         {
-            if (dieData.Count == 0) return;
+            if (dieList.Count == 0) return;
 
-            dieList.Clear();
+            //dieList.Clear();
             int panelWidth = this.Width;
             int panelHeight = this.Height;
 
@@ -397,8 +468,10 @@ namespace HedgeHulkApp.Usercontrol
                     int dieX = (j * dieWidth) + ((panelWidth - gDieCols * dieWidth) / 2);
                     int dieY = (i * dieHeight) + ((panelHeight - gDieRows * dieHeight) / 2);
                     Rectangle dieRect = new Rectangle(dieX, dieY, dieWidth, dieHeight);
-                    Die die = new Die(dieRect, dieData[j + i * gDieCols].IsLightGreen);
-                    dieList.Add(die);
+                    //Die die = new Die(dieRect, dieData[j + i * gDieCols].IsLightGreen);
+                    //dieList[j + i * gDieCols] = new Die(dieRect, dieList[j + i * gDieCols].IsEdge);
+                    dieList[j + i * gDieCols].Bounds = dieRect;
+                    
                 }
             }
         }
@@ -432,8 +505,13 @@ namespace HedgeHulkApp.Usercontrol
                 );
 
                 Console.WriteLine($"endPoint={endPoint.X}, endPoint={endPoint.Y}");
+                
+
                 this.Invalidate();
             }
+
+
+            callbacmousemove?.Invoke(e.X, e.Y);
         }
 
         private void PanelWaferMap_MouseUp(object sender, MouseEventArgs e)
@@ -473,8 +551,8 @@ namespace HedgeHulkApp.Usercontrol
         // 加载时初始化
         private void UserControlDisplayWaferMap_Load(object sender, EventArgs e)
         {
-            InitWaferList(); // 初始化 Die 数据
-            ReDrawWaferMap(); // 重绘晶圆图
+            //InitWaferList(wafeMapSetting); // 初始化 Die 数据
+           // ReDrawWaferMap(); // 重绘晶圆图
 
             Console.WriteLine($"Width={Width}, Height={Height}");
 
@@ -485,6 +563,96 @@ namespace HedgeHulkApp.Usercontrol
         private void UserControlWaferMap_Resize(object sender, EventArgs e)
         {
             ReDrawWaferMap();
+            ResetZoom();
+            Console.WriteLine($"Width={Width}, Height={Height}");
+        }
+
+        private void UserControlDisplayWaferMap_MouseClick(object sender, MouseEventArgs e)
+        {
+            // 將點擊位置根據縮放比例還原
+
+            Console.WriteLine($"e.Location.X={e.Location.X},e.Location.Y={e.Location.Y}");
+            //Point originalClickPoint = new Point(e.Location.X , e.Location.Y );
+
+            int restoredX = (int)((e.Location.X / scaleFactor) + zoomOrigin.X);
+            int restoredY = (int)((e.Location.Y / scaleFactor) + zoomOrigin.Y);
+            Point originalClickPoint = new Point(restoredX, restoredY);
+
+            Console.WriteLine($"originalClickPoint.X={originalClickPoint.X},restoredY={originalClickPoint.Y}");
+
+            // Die 數量（列和行）
+            int dieColumns = gDieCols; // 水平方向的 Die 數量
+            int dieRows = gDieRows;       // 垂直方向的 Die 數量
+
+            // Die 的寬和高（像素）
+            int dieWidth = this.Width / dieColumns;
+            int dieHeight = this.Height / dieRows;
+
+           // Console.WriteLine($"Panel Width: {this.Width}, Height: {this.Height}");
+           // Console.WriteLine($"Die Width: {dieWidth}, Height: {dieHeight}");
+
+            // 計算點擊的 Die
+            int clickedDieIndex = GetClickedDie(originalClickPoint, dieWidth, dieHeight, dieColumns, dieRows);
+
+            if (clickedDieIndex != -1)
+            {
+                // 點擊到了某個 Die
+                callbackfun($"您點擊了 die {clickedDieIndex}", clickedDieIndex);
+
+                if (dieList.Count() == 0) return;
+
+                if(dieList[clickedDieIndex].diePos == DiePosition.Edge)
+                {
+                    dieList[clickedDieIndex].diePos =  DiePosition.InsideEdge;
+                }
+                else if(dieList[clickedDieIndex].diePos == DiePosition.InsideEdge)
+                {
+                    dieList[clickedDieIndex].diePos = DiePosition.Edge;
+                }
+
+
+                Rectangle adjustedBounds = AdjustedBounds(dieList[clickedDieIndex].Bounds);
+
+
+                Console.WriteLine($"Post={dieList[clickedDieIndex].diePos},Index={clickedDieIndex}, Bounds.X={adjustedBounds.X},Bounds.Y={adjustedBounds.Y}" +
+                                    $"Width={adjustedBounds.Width}, Height={adjustedBounds.Height}");
+                // 只更新部分区域
+                Invalidate(adjustedBounds);
+                
+
+
+            }
+            else
+            {
+                // 未點擊到任何 Die
+                callbackfun("您沒有點擊到任何 die", clickedDieIndex);
+            }
+        }
+
+        private int GetClickedDie(Point clickPoint, int dieWidth, int dieHeight, int dieColumns, int dieRows)
+        {
+            // Panel 的寬和高
+            int panelWidth = dieColumns * dieWidth;
+            int panelHeight = dieRows * dieHeight;
+
+            // 計算點擊位置相對於 Panel 的座標
+            int relativeX = clickPoint.X - (this.Width - panelWidth) / 2;
+            int relativeY = clickPoint.Y - (this.Height - panelHeight) / 2;
+
+            // 確認點擊是否在 Panel 範圍內
+            if (relativeX >= 0 && relativeX < panelWidth &&
+                relativeY >= 0 && relativeY < panelHeight)
+            {
+                // 計算點擊位置對應的 Die 的索引
+                int clickedDieX = relativeX / dieWidth;
+                int clickedDieY = relativeY / dieHeight;
+
+                // 返回 Die 的索引
+                return clickedDieX + clickedDieY * dieColumns;
+            }
+
+            // 如果點擊位置在範圍外，返回 -1
+            return -1;
         }
     }
 

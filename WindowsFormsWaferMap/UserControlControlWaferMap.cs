@@ -22,6 +22,7 @@ namespace HedgeHulkApp.Usercontrol
         WAFER_RESET_ZOOM,
         JUMP_POSITION,
         NEW_MAP,
+        OPEN_MAP,
     }
 
     public delegate void CallbackDelegateGUI(COMMANDCODE commmand, WafeMapSetting setting=null);
@@ -56,7 +57,7 @@ namespace HedgeHulkApp.Usercontrol
         {
             Random rnd = new Random();
             //wsetting.count = rnd.Next(80, 100);
-            wsetting.count = 94;
+            wsetting.startPosition = 94;
             Thread thread = new Thread(() =>
             {
 
@@ -90,8 +91,8 @@ namespace HedgeHulkApp.Usercontrol
                     
                     callbackDelegateGUI?.Invoke(COMMANDCODE.WAFER_RUN, wsetting);
                     Thread.Sleep(600);
-                    Console.WriteLine($"Count={wsetting.count}");
-                    wsetting.count++;
+                    Console.WriteLine($"Count={wsetting.startPosition}");
+                    wsetting.startPosition++;
                     
 
 
@@ -124,25 +125,29 @@ namespace HedgeHulkApp.Usercontrol
         private void buttonJump_Click(object sender, EventArgs e)
         {
 
-            int x = Convert.ToInt32(textBoxAxisX.Text);
-            int y = Convert.ToInt32(textBoxAxisY.Text);
-            int factor = Convert.ToInt32(textBoxFactor.Text);
+            //int x = Convert.ToInt32(textBoxAxisX.Text);
+            //int y = Convert.ToInt32(textBoxAxisY.Text);
+            //int factor = Convert.ToInt32(textBoxFactor.Text);
             
-            wsetting.axisX = x;
-            wsetting.axisY = y;
-            wsetting.factor = factor;
+            //wsetting.axisX = x;
+            //wsetting.axisY = y;
+            //wsetting.factor = factor;
             callbackDelegateGUI?.Invoke(COMMANDCODE.JUMP_POSITION, wsetting);
         }
 
         private void buttonNewMap_Click(object sender, EventArgs e)
         {
 
-            int col = Convert.ToInt32(textBoxCol.Text);
-            int row = Convert.ToInt32(textBoxRow.Text);
-           
-            wsetting.col = col;
-            wsetting.row = row;
+            //int dwidth = Convert.ToInt32(textBoxDieWidth.Text);
+            //int dheight = Convert.ToInt32(textBoxDieHeight.Text);
 
+            //int diemeter = Convert.ToInt32(textBoxWaferDiemeter.Text);
+
+            //int borderness = Convert.ToInt32(textBoxWaferBorderness.Text);
+            //wsetting.wafer_borderness = borderness;
+            //wsetting.dwidth = dwidth;
+            //wsetting.dheight = dheight;
+            //wsetting.wafer_diemeter = diemeter;
             callbackDelegateGUI?.Invoke(COMMANDCODE.NEW_MAP, wsetting);
         }
     }

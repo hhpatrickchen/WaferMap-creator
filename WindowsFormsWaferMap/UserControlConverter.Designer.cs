@@ -1,9 +1,7 @@
 ﻿
-using System;
-
-namespace HedgeHulkApp.Usercontrol
+namespace WindowsFormsWaferMap
 {
-    partial class UserControlDisplayWaferMap
+    partial class UserControlConverter
     {
         /// <summary> 
         /// 設計工具所需的變數。
@@ -33,15 +31,14 @@ namespace HedgeHulkApp.Usercontrol
         {
             this.SuspendLayout();
             // 
-            // UserControlDisplayWaferMap
+            // UserControlConverter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Name = "UserControlDisplayWaferMap";
-            this.Size = new System.Drawing.Size(318, 201);
-            this.Load += new System.EventHandler(this.UserControlDisplayWaferMap_Load);
-            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.UserControlDisplayWaferMap_MouseClick);
-            this.Resize += new System.EventHandler(this.UserControlWaferMap_Resize);
+            this.Name = "UserControlConverter";
+            this.Size = new System.Drawing.Size(346, 333);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.UserControlConverter_Paint);
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.UserControlConverter_MouseClick);
             this.ResumeLayout(false);
 
         }

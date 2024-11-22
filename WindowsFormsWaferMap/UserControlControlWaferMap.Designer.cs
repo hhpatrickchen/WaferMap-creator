@@ -43,14 +43,18 @@ namespace HedgeHulkApp.Usercontrol
             this.textBoxFactor = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBoxRow = new System.Windows.Forms.TextBox();
-            this.textBoxCol = new System.Windows.Forms.TextBox();
+            this.textBoxDieHeight = new System.Windows.Forms.TextBox();
+            this.textBoxDieWidth = new System.Windows.Forms.TextBox();
             this.buttonNewMap = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.textBoxWaferDiemeter = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.textBoxWaferBorderness = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // buttonRun
             // 
-            this.buttonRun.Location = new System.Drawing.Point(18, 140);
+            this.buttonRun.Location = new System.Drawing.Point(5, 238);
             this.buttonRun.Margin = new System.Windows.Forms.Padding(2);
             this.buttonRun.Name = "buttonRun";
             this.buttonRun.Size = new System.Drawing.Size(81, 27);
@@ -61,7 +65,7 @@ namespace HedgeHulkApp.Usercontrol
             // 
             // ZoomOut
             // 
-            this.ZoomOut.Location = new System.Drawing.Point(106, 110);
+            this.ZoomOut.Location = new System.Drawing.Point(91, 208);
             this.ZoomOut.Margin = new System.Windows.Forms.Padding(2);
             this.ZoomOut.Name = "ZoomOut";
             this.ZoomOut.Size = new System.Drawing.Size(83, 26);
@@ -72,7 +76,7 @@ namespace HedgeHulkApp.Usercontrol
             // 
             // buttonResetWafer
             // 
-            this.buttonResetWafer.Location = new System.Drawing.Point(106, 140);
+            this.buttonResetWafer.Location = new System.Drawing.Point(91, 238);
             this.buttonResetWafer.Margin = new System.Windows.Forms.Padding(2);
             this.buttonResetWafer.Name = "buttonResetWafer";
             this.buttonResetWafer.Size = new System.Drawing.Size(83, 27);
@@ -83,7 +87,7 @@ namespace HedgeHulkApp.Usercontrol
             // 
             // ZoomIn
             // 
-            this.ZoomIn.Location = new System.Drawing.Point(18, 110);
+            this.ZoomIn.Location = new System.Drawing.Point(3, 208);
             this.ZoomIn.Margin = new System.Windows.Forms.Padding(2);
             this.ZoomIn.Name = "ZoomIn";
             this.ZoomIn.Size = new System.Drawing.Size(83, 26);
@@ -94,7 +98,7 @@ namespace HedgeHulkApp.Usercontrol
             // 
             // buttonResetZoom
             // 
-            this.buttonResetZoom.Location = new System.Drawing.Point(16, 171);
+            this.buttonResetZoom.Location = new System.Drawing.Point(3, 269);
             this.buttonResetZoom.Margin = new System.Windows.Forms.Padding(2);
             this.buttonResetZoom.Name = "buttonResetZoom";
             this.buttonResetZoom.Size = new System.Drawing.Size(83, 26);
@@ -105,7 +109,7 @@ namespace HedgeHulkApp.Usercontrol
             // 
             // buttonJump
             // 
-            this.buttonJump.Location = new System.Drawing.Point(118, 248);
+            this.buttonJump.Location = new System.Drawing.Point(118, 346);
             this.buttonJump.Margin = new System.Windows.Forms.Padding(2);
             this.buttonJump.Name = "buttonJump";
             this.buttonJump.Size = new System.Drawing.Size(50, 26);
@@ -116,7 +120,7 @@ namespace HedgeHulkApp.Usercontrol
             // 
             // textBoxAxisX
             // 
-            this.textBoxAxisX.Location = new System.Drawing.Point(33, 212);
+            this.textBoxAxisX.Location = new System.Drawing.Point(33, 310);
             this.textBoxAxisX.Name = "textBoxAxisX";
             this.textBoxAxisX.Size = new System.Drawing.Size(50, 22);
             this.textBoxAxisX.TabIndex = 24;
@@ -124,7 +128,7 @@ namespace HedgeHulkApp.Usercontrol
             // 
             // textBoxAxisY
             // 
-            this.textBoxAxisY.Location = new System.Drawing.Point(118, 212);
+            this.textBoxAxisY.Location = new System.Drawing.Point(118, 310);
             this.textBoxAxisY.Name = "textBoxAxisY";
             this.textBoxAxisY.Size = new System.Drawing.Size(50, 22);
             this.textBoxAxisY.TabIndex = 25;
@@ -133,7 +137,7 @@ namespace HedgeHulkApp.Usercontrol
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(11, 215);
+            this.label1.Location = new System.Drawing.Point(11, 313);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(16, 12);
             this.label1.TabIndex = 26;
@@ -142,7 +146,7 @@ namespace HedgeHulkApp.Usercontrol
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(96, 215);
+            this.label2.Location = new System.Drawing.Point(96, 313);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(16, 12);
             this.label2.TabIndex = 27;
@@ -151,7 +155,7 @@ namespace HedgeHulkApp.Usercontrol
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(11, 255);
+            this.label3.Location = new System.Drawing.Point(11, 353);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(37, 12);
             this.label3.TabIndex = 29;
@@ -159,7 +163,7 @@ namespace HedgeHulkApp.Usercontrol
             // 
             // textBoxFactor
             // 
-            this.textBoxFactor.Location = new System.Drawing.Point(49, 252);
+            this.textBoxFactor.Location = new System.Drawing.Point(49, 350);
             this.textBoxFactor.Name = "textBoxFactor";
             this.textBoxFactor.Size = new System.Drawing.Size(50, 22);
             this.textBoxFactor.TabIndex = 28;
@@ -168,57 +172,95 @@ namespace HedgeHulkApp.Usercontrol
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(112, 20);
+            this.label4.Location = new System.Drawing.Point(22, 47);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(30, 12);
+            this.label4.Size = new System.Drawing.Size(58, 12);
             this.label4.TabIndex = 33;
-            this.label4.Text = "Row:";
+            this.label4.Text = "Die Height:";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(22, 20);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(25, 12);
+            this.label5.Size = new System.Drawing.Size(53, 12);
             this.label5.TabIndex = 32;
-            this.label5.Text = "Col:";
+            this.label5.Text = "Die Widh:";
             // 
-            // textBoxRow
+            // textBoxDieHeight
             // 
-            this.textBoxRow.Location = new System.Drawing.Point(148, 17);
-            this.textBoxRow.Name = "textBoxRow";
-            this.textBoxRow.Size = new System.Drawing.Size(50, 22);
-            this.textBoxRow.TabIndex = 31;
-            this.textBoxRow.Text = "20";
+            this.textBoxDieHeight.Location = new System.Drawing.Point(118, 44);
+            this.textBoxDieHeight.Name = "textBoxDieHeight";
+            this.textBoxDieHeight.Size = new System.Drawing.Size(56, 22);
+            this.textBoxDieHeight.TabIndex = 31;
+            this.textBoxDieHeight.Text = "2000";
             // 
-            // textBoxCol
+            // textBoxDieWidth
             // 
-            this.textBoxCol.Location = new System.Drawing.Point(53, 17);
-            this.textBoxCol.Name = "textBoxCol";
-            this.textBoxCol.Size = new System.Drawing.Size(50, 22);
-            this.textBoxCol.TabIndex = 30;
-            this.textBoxCol.Text = "30";
+            this.textBoxDieWidth.Location = new System.Drawing.Point(118, 17);
+            this.textBoxDieWidth.Name = "textBoxDieWidth";
+            this.textBoxDieWidth.Size = new System.Drawing.Size(56, 22);
+            this.textBoxDieWidth.TabIndex = 30;
+            this.textBoxDieWidth.Text = "3000";
             // 
             // buttonNewMap
             // 
-            this.buttonNewMap.Location = new System.Drawing.Point(148, 53);
+            this.buttonNewMap.Location = new System.Drawing.Point(124, 136);
             this.buttonNewMap.Margin = new System.Windows.Forms.Padding(2);
             this.buttonNewMap.Name = "buttonNewMap";
             this.buttonNewMap.Size = new System.Drawing.Size(50, 26);
             this.buttonNewMap.TabIndex = 34;
-            this.buttonNewMap.Text = "New";
+            this.buttonNewMap.Text = "Create";
             this.buttonNewMap.UseVisualStyleBackColor = true;
             this.buttonNewMap.Click += new System.EventHandler(this.buttonNewMap_Click);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(20, 75);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(82, 12);
+            this.label6.TabIndex = 36;
+            this.label6.Text = "Wafer Diemeter:";
+            // 
+            // textBoxWaferDiemeter
+            // 
+            this.textBoxWaferDiemeter.Location = new System.Drawing.Point(118, 72);
+            this.textBoxWaferDiemeter.Name = "textBoxWaferDiemeter";
+            this.textBoxWaferDiemeter.Size = new System.Drawing.Size(56, 22);
+            this.textBoxWaferDiemeter.TabIndex = 35;
+            this.textBoxWaferDiemeter.Text = "20";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(20, 103);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(88, 12);
+            this.label7.TabIndex = 38;
+            this.label7.Text = "Wafer Bordeness:";
+            // 
+            // textBoxWaferBorderness
+            // 
+            this.textBoxWaferBorderness.Location = new System.Drawing.Point(118, 100);
+            this.textBoxWaferBorderness.Name = "textBoxWaferBorderness";
+            this.textBoxWaferBorderness.Size = new System.Drawing.Size(56, 22);
+            this.textBoxWaferBorderness.TabIndex = 37;
+            this.textBoxWaferBorderness.Text = "2";
             // 
             // UserControlControlWaferMap
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.textBoxWaferBorderness);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.textBoxWaferDiemeter);
             this.Controls.Add(this.buttonNewMap);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.textBoxRow);
-            this.Controls.Add(this.textBoxCol);
+            this.Controls.Add(this.textBoxDieHeight);
+            this.Controls.Add(this.textBoxDieWidth);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.textBoxFactor);
             this.Controls.Add(this.label2);
@@ -232,7 +274,7 @@ namespace HedgeHulkApp.Usercontrol
             this.Controls.Add(this.buttonResetWafer);
             this.Controls.Add(this.ZoomIn);
             this.Name = "UserControlControlWaferMap";
-            this.Size = new System.Drawing.Size(364, 409);
+            this.Size = new System.Drawing.Size(309, 409);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -254,8 +296,12 @@ namespace HedgeHulkApp.Usercontrol
         private System.Windows.Forms.TextBox textBoxFactor;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBoxRow;
-        private System.Windows.Forms.TextBox textBoxCol;
+        private System.Windows.Forms.TextBox textBoxDieHeight;
+        private System.Windows.Forms.TextBox textBoxDieWidth;
         private System.Windows.Forms.Button buttonNewMap;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox textBoxWaferDiemeter;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox textBoxWaferBorderness;
     }
 }

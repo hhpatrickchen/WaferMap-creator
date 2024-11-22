@@ -72,6 +72,8 @@ namespace ConsoleApp2
         }
 
 
+        //40, 45, 50, 60, 80 (Unit: 0.1 inch)
+        //100, 115, 125, 150, 200 (Unit: mm)
         public UInt16 WaferSize
         {
             get
@@ -95,6 +97,7 @@ namespace ConsoleApp2
             }
         }
 
+        //(Unit: 0.01um) = 10 nm
         public UInt32 IndexSizeX
         {
             get
@@ -106,6 +109,8 @@ namespace ConsoleApp2
                 Index_Size_X = WaferMapUtility.ReverseArray(BitConverter.GetBytes(value));
             }
         }
+
+        //(Unit: 0.01um)
         public UInt32 IndexSizeY
         {
             get
@@ -145,7 +150,7 @@ namespace ConsoleApp2
         {
             
             Console.WriteLine($"OperatorName={OperatorName}");
-            Console.WriteLine($"OperatorName={DeviceName}");
+            Console.WriteLine($"DeviceName={DeviceName}");
 
             Console.WriteLine($"WaferSize={WaferSize}");
 
